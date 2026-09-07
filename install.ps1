@@ -75,7 +75,10 @@ try {
     $StagedBinary = Join-Path $InstallDirectory ('.shipd.' + [Guid]::NewGuid() + '.exe')
     [IO.File]::Copy($UnpackedBinary, $StagedBinary, $true)
     if ([IO.File]::Exists($Destination)) {
-        [IO.File]::Replace($StagedBinary, $Destination, $null)
+        # [NullString]::Value, not $null: PowerShell binds $null to a .NET string
+        # parameter as the empty string, and File.Replace rejects that. Passing
+        # $null here made every upgrade fail while first installs succeeded.
+        [IO.File]::Replace($StagedBinary, $Destination, [NullString]::Value)
     } else {
         [IO.File]::Move($StagedBinary, $Destination)
     }
