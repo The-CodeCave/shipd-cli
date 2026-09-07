@@ -128,6 +128,6 @@ checksum before executing anything.
 
 Installers verify the selected archive against the release's `SHA256SUMS` before replacing an existing binary. Linux archives are statically linked musl binaries. Windows is built and smoke-tested as a first-class release target, but receives less field coverage than Apple Silicon and Linux today.
 
-The current macOS artifacts are not Developer ID signed or notarized. Releases also do not yet include cryptographic artifact signatures beyond SHA-256 checksums. These are explicit pre-GA limitations, not guarantees implied by this repository.
+macOS binaries from v0.1.1 onward are Developer ID signed with hardened runtime and accepted by Apple’s notarization service before publication. Version v0.1.0 remains unsigned. The standalone executable cannot carry a stapled notarization ticket, so Gatekeeper may need network access to retrieve Apple’s ticket on first use. Linux and Windows do not yet have independent artifact signatures; SHA-256 checksums verify download integrity.
 
 See [SECURITY.md](SECURITY.md) for private vulnerability reporting and [LICENSE](LICENSE) for the binary distribution terms.
