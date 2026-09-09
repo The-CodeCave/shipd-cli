@@ -25,6 +25,11 @@ Read when an operation returns `action_required` or a pending confirmation.
    binding uses its confirmation ID). Resume the exact requested action, not a
    fresh deploy of possibly changed files.
 
+For a `compose.safety.yaml` false-positive review before upload, no uploaded
+operation exists yet. After approval, rerun `plan`/`deploy` from the same folder
+as the action directs. Offline `validate` cannot verify server approval and may
+still report `SAFETY_EXCEPTION_REVIEW_REQUIRED`; use online `plan` to continue.
+
 `declined`, `cancelled`, `expired`, and `failed` are terminal outcomes. Do not
 reopen the same request automatically or treat it as consent. Explain what
 stopped the operation; a fresh request needs relevant user intent. If multiple

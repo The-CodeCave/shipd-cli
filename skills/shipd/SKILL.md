@@ -1,6 +1,6 @@
 ---
 name: shipd
-description: Deploy and operate a user's application on Shipd using its CLI or an available Shipd MCP connection. Use for Shipd publishing, project connection, deployment approvals, and diagnosed failures. Not for developing the Shipd platform itself or deploying to other clouds.
+description: Deploy and operate a user's application on Shipd using its CLI or an available Shipd MCP connection. Use for Shipd publishing, project connection, deployment approvals, credential-scan false positives, and diagnosed failures. Not for developing the Shipd platform itself or deploying to other clouds.
 ---
 
 # Shipd
@@ -24,6 +24,7 @@ handoff: project folder, operation ID, current state, next action.
 | First publish, changed source, or interrupted deployment | [deploy](references/deploy.md) |
 | Create or repair Compose and public HTTP exposure | [compose](references/compose.md) |
 | `action_required`, pending approval, or secret entry | [actions](references/actions.md) |
+| `LEAKED_CREDENTIAL` or a suspected scanner false positive | [safety exceptions](references/safety-exceptions.md) |
 | Inspect health or investigate a failed public check | [diagnose](references/diagnose.md) |
 | App needs persistent data, PostgreSQL or secret bindings | [data and secrets](references/data-and-secrets.md) |
 | User requests MCP or the client needs a connection | [MCP](references/mcp.md) |
@@ -41,6 +42,9 @@ handoff: project folder, operation ID, current state, next action.
 - Never ask for tokens or secret values in chat, read credential files, or print
   secret environment values. Humans enter credentials in the hidden `shipd auth`
   terminal prompt or secrets on Shipd's returned action page.
+- For a verified scanner false positive, use the reviewed exception workflow in
+  optional `compose.safety.yaml`. Discuss the finding with the user before adding
+  an entry; the file itself does not grant approval or disable credential checks.
 - Preserve the server-returned operation ID. A retry continues that operation;
   changed source requires a new one. Do not turn a status request into a deploy.
 - A completed apply is not proof of a live website. Report the returned public

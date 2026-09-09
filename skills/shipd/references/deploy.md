@@ -17,6 +17,11 @@ plan upload), from unchanged files. A source mismatch needs a new operation.
 If the original create response was lost, reuse the submitted ID until the server
 returns its canonical ID. Do not reuse a **plan** operation ID for **apply**.
 
+A false-positive review can happen before any upload exists. After approval,
+rerun `plan`/`deploy` from that folder as instructed, rather than attempting to
+resume an uncreated upload. For credential findings, select safety exceptions
+from the skill's routing table.
+
 ## New or changed source
 
 1. Run `shipd doctor --non-interactive`. Inspect detected framework, commands,
@@ -35,6 +40,8 @@ returns its canonical ID. Do not reuse a **plan** operation ID for **apply**.
 4. If deployment is authorized and the plan is acceptable, run
    `shipd deploy --non-interactive`. This is the `apply` alias. Do not use force
    flags, fake credentials, or weakened safety rules to get past a blocker.
+   Verified scanner false positives have a supported human-reviewed exception
+   path in `compose.safety.yaml`; use the safety-exceptions reference when needed.
 
 ## Interpret the result
 
