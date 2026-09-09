@@ -1,0 +1,4 @@
+interface:
+  display_name: "Shipd"
+  short_description: "Publish and operate apps on Shipd"
+  default_prompt: "Use $shipd to deploy this project and return its verified live URL."

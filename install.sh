@@ -102,7 +102,23 @@ mv -f "$staged_binary" "$install_directory/shipd"
 trap 'rm -rf -- "$temporary_directory"' EXIT HUP INT TERM
 
 echo "Installed shipd to $install_directory/shipd"
+# A piped installer cannot edit its parent's PATH. Give an executable setup
+# command and an immediate auth fallback, quoting even unusual custom paths.
+shell_quote() {
+  printf "'"
+  printf '%s' "$1" | sed "s/'/'\\\\''/g"
+  printf "'"
+}
 case ":${PATH:-}:" in
-  *":$install_directory:"*) ;;
-  *) echo "Add $install_directory to PATH to run shipd from any shell." ;;
+  *":$install_directory:"*) echo 'In your project folder, run: shipd auth' ;;
+  *)
+    printf '\nRun this in your terminal to finish setup:\n\n  export PATH='
+    shell_quote "$install_directory"
+    # The user's current PATH expands when they run this printed command.
+    # shellcheck disable=SC2016
+    printf ':"$PATH"\n\nThen, in your project folder, run: shipd auth\n'
+    printf '\nOr connect immediately from your project folder with:\n\n  '
+    shell_quote "$install_directory/shipd"
+    printf ' auth\n'
+    ;;
 esac

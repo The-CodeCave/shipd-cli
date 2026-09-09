@@ -15,16 +15,16 @@ brew install The-CodeCave/tap/shipd
 Verified installer on Apple Silicon, Intel macOS, x86-64 Linux, or ARM64 Linux:
 
 ```sh
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/The-CodeCave/shipd-cli/releases/latest/download/install.sh | sh
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/The-CodeCave/shipd-cli/releases/latest/download/install.sh | sh && export PATH="${SHIPD_INSTALL_DIR:-$HOME/.local/bin}:$PATH"
 ```
 
 PowerShell on x86-64 Windows:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -Command "irm 'https://github.com/The-CodeCave/shipd-cli/releases/latest/download/install.ps1' | iex"
+irm 'https://github.com/The-CodeCave/shipd-cli/releases/latest/download/install.ps1' | iex
 ```
 
-The Unix installer writes to `~/.local/bin` without `sudo`. The Windows installer writes to `%LOCALAPPDATA%\Shipd\bin` and adds that directory to the user PATH. Set `SHIPD_INSTALL_DIR` to an absolute directory to override the destination. Set `SHIPD_VERSION=0.1.0` to pin a release instead of installing `latest`.
+The Unix installer writes to `~/.local/bin` without `sudo`; the command above makes it available in your current terminal immediately. The installer also prints the exact command for connecting the folder if a later terminal cannot find `shipd`. The Windows installer writes to `%LOCALAPPDATA%\Shipd\bin` and adds that directory to both the current PowerShell and user PATH. Set `SHIPD_INSTALL_DIR` to an absolute directory to override the destination. Set `SHIPD_VERSION=0.1.0` to pin a release instead of installing `latest`.
 
 Confirm the installed artifact:
 
@@ -34,16 +34,48 @@ shipd --version
 
 ## Connect
 
-The CLI uses the official Shipd proof-of-concept control plane by default. Copy an environment token from the Shipd dashboard, then export it in your shell:
+Open a terminal in your project's root folder, then run:
 
 ```sh
-export SHIPD_TOKEN='...'
-shipd status
+shipd auth
 ```
 
-PowerShell uses `$env:SHIPD_TOKEN = '...'`. Self-hosted operators can override the endpoint with `SHIPD_CONTROL_PLANE_URL`; ordinary users do not need to set it.
+Paste the agent token from your Shipd project into the hidden prompt. Shipd verifies the token and saves it outside your repository, bound to this exact folder. Subfolders and other checkouts need their own connection.
 
-Installing the CLI does not grant Kubernetes or registry credentials. Remote inspection commands use the control plane, while `shipd plan` and `shipd apply` currently require a Shipd-managed execution host with cell access. Hosted Apply from an arbitrary laptop or CI runner is not enabled yet.
+Open your coding agent in the same folder and say:
+
+> Deploy this project to Shipd.
+
+The agent inspects your app with `shipd doctor`, prepares the Compose files, previews the changes with `shipd plan`, and publishes with `shipd deploy` (also named `shipd apply`). Shipd uploads the current source and runs builds and deployment on its managed executor. You do not need local Docker, cluster credentials, or a Git connection to deploy this way.
+
+The CLI uses Shipd's official endpoint automatically. `shipd auth login` also supports browser sign-in. Self-hosted operators can choose a trusted endpoint with `shipd auth --url <https-origin>`.
+
+Deployment output includes the public checks for DNS, TLS, HTTP responses, redirect loops, and broken critical assets. `publication.verified_urls` contains only URLs whose checks passed. A failed public check preserves the completed deployment and its operation ID; `shipd operations resume <operation_id>` rechecks it without deploying again. If the agent needs a secret or approval, it gives you the exact page to complete, then resumes the same uploaded source.
+
+`shipd plan`, `shipd deploy`, and operation resumes emit JSON Lines in `--json` mode: progress when the execution state changes, then one final result. A pending execution exits 2 and retains its resume command. A completed apply whose public checks fail exits 1 with `state: succeeded` and `publication.status: failed`; use its resume command to recheck DNS/TLS readiness, or `shipd status` for diagnosis.
+
+## Give your agent the Shipd skill
+
+The optional [Shipd skill](https://github.com/The-CodeCave/shipd-cli/tree/main/skills/shipd) teaches your agent the publishing
+and recovery workflow. Install it from your application's root folder:
+
+```sh
+npx skills add The-CodeCave/shipd-cli --skill shipd
+```
+
+Choose your agent in the installer's prompts. This uses the
+[open Agent Skills installer](https://github.com/vercel-labs/skills) and requires
+Node.js; it installs instructions, not Shipd credentials. You can also copy the
+entire `skills/shipd` directory from the public repository into your agent's supported skills location.
+Keep `references/` beside `SKILL.md`. For Codex, a project installation belongs in
+`.agents/skills/shipd`; for Claude Code, `.claude/skills/shipd`. Follow your client's
+skill discovery/reload instructions, then ask it to deploy the project to Shipd.
+
+The skill exposes a short description for discovery, a small overview when
+selected, and eight independent references loaded only for the current task. It
+uses the installed CLI's command-specific help when needed. Do not paste all of
+its files into a system prompt or AGENTS.md: that defeats progressive disclosure.
+The folder CLI works without the skill; installing it adds no authentication step.
 
 ## Automation and agent shells
 
@@ -78,7 +110,9 @@ shipd --non-interactive confirmations watch
 For authentication, `auth login --non-interactive` emits JSON Lines: a pending record containing
 the verification URL and user code appears before polling, followed by one final success or error
 record. Secrets are never accepted as a raw command-line argument; use `SHIPD_TOKEN` or the
-folder-scoped credential created by `shipd auth login`. Parse and runtime-bootstrap failures are
+folder-scoped credential created by `shipd auth`. Automation may explicitly supply one token line
+through `shipd auth --token-stdin --non-interactive`; ordinary non-interactive commands never prompt.
+Parse and runtime-bootstrap failures are
 also structured as `shipd.envelope/v2` in machine mode; v2 adds the retry-oriented `error.help`
 object without changing the published `shipd.envelope/v1` contract.
 
