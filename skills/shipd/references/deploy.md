@@ -67,3 +67,19 @@ works. A missing `publication` field on an older version is not a passing check.
 Avoid endless retries. After the same failure recurs without new evidence, retain
 the ID and report the specific blocker. Continue only after a relevant change or
 within a bounded wait supported by the command.
+
+## Deployment errors and diagnostics
+
+Add `--verbose` to print the HTTP method, endpoint, status, and correlation ID to stderr.
+JSON error envelopes also carry `correlation_id` and `http_status` when an HTTP response exists.
+Keep the correlation ID when contacting Shipd support; never share the folder token.
+
+- `DEPLOYMENT_UNAVAILABLE`: retry after `retry_after_seconds`.
+- `DEPLOYMENT_NOT_CONFIGURED` or `PROJECT_NOT_READY`: contact Shipd support with the correlation ID.
+- `AUTH_FORBIDDEN`: the project owner must grant deployment permission to the folder token.
+- `OPERATION_INVALID`: copy the complete operation ID (`local-` plus 64 lowercase hex characters).
+- `OPERATION_UNKNOWN`: check the project and ID; rerun plan/apply if no upload was accepted.
+
+Before upload completes, retry the printed plan/apply command from the original folder.
+Once work is queued, resume the server-returned operation ID. Source validation errors require
+fixing the source and starting a new plan/apply operation.

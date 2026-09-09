@@ -39,6 +39,6 @@ the unsupported requirement; do not silently remove it.
 
 Advanced networking, scaling, schedules and storage settings are unnecessary for
 a basic first publish. When requested, consult just that feature in the official
-documentation and validate the exact change with plan. Do not add Kubernetes
+documentation and validate the exact change with plan. Do not add platform orchestration
 manifests, assume arbitrary `x-` keys work, or ask customers for platform operator
 credentials.

@@ -8,7 +8,7 @@ description: Deploy and operate a user's application on Shipd using its CLI or a
 Shipd is a managed cloud operated by the user's coding agent. Standard
 `compose.yaml` plus `compose.deploy.yaml` describe the app; Shipd builds and runs
 it remotely. The dashboard shows state and completes human actions. Customers
-do not need Kubernetes credentials, local Docker, or a Git remote to publish.
+only need their folder-scoped Shipd token to publish.
 
 ## Load only the current task
 
