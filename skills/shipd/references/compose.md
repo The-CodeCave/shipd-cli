@@ -25,7 +25,8 @@ or assume an image includes curl/wget. Build tools belong in the build stage.
 Start with a platform URL via `x-public: true` unless the user requests a custom
 domain. `x-domains: ["app.example.com"]` requests custom hosts and is independent
 of `x-public`; never guess domain ownership or copy an example hostname into the
-user's deployment. Plan returns the relevant admission/authorization requirements.
+user's deployment. Plan returns admission requirements. For exact DNS records and the CLI 0.1.6
+connection workflow, select the domains reference from the skill routing table.
 
 For persistence, managed PostgreSQL or secret bindings, select the data-and-secrets
 reference from the entry point only when the app needs them.

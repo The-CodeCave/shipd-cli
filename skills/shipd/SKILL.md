@@ -23,6 +23,7 @@ handoff: project folder, operation ID, current state, next action.
 | Missing CLI, authentication, or wrong folder | [connect](references/connect.md) |
 | First publish, changed source, or interrupted deployment | [deploy](references/deploy.md) |
 | Create or repair Compose and public HTTP exposure | [compose](references/compose.md) |
+| Connect a custom domain or check DNS/TLS publication | [domains](references/domains.md) |
 | `action_required`, pending approval, or secret entry | [actions](references/actions.md) |
 | `LEAKED_CREDENTIAL` or a suspected scanner false positive | [safety exceptions](references/safety-exceptions.md) |
 | Inspect health or investigate a failed public check | [diagnose](references/diagnose.md) |
