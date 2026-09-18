@@ -31,6 +31,28 @@ connection workflow, select the domains reference from the skill routing table.
 For persistence, managed PostgreSQL or secret bindings, select the data-and-secrets
 reference from the entry point only when the app needs them.
 
+## Build arguments
+
+Shipd supports standard Compose `build.args` for Dockerfile `ARG` values:
+
+```yaml
+services:
+  nimbus:
+    build:
+      context: .
+      args:
+        APP_MODE: production
+        PUBLIC_API_URL: ${PUBLIC_API_URL:-https://api.example.com}
+```
+
+Mapping and `KEY=value` list syntax use Compose's normal interpolation and
+override merging. Values must come from the submitted project or explicit
+Compose defaults; a remote build does not inherit your terminal's environment.
+An explicit empty string overrides the Dockerfile default. An argument with no
+resolved value is omitted, preserving the Dockerfile default. Changed arguments
+produce a different image identity. These are ordinary build configuration;
+secret-slot bindings remain runtime-only.
+
 ## Capability checks
 
 The installed version's remote plan is authoritative about supported keys and

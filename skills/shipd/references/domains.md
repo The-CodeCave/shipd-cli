@@ -7,9 +7,10 @@ routing must be verified before Shipd publishes the domain.
 
 ## DNS for an exact subdomain
 
-Obtain this project's `domain_connect_target` from its DomainConnect action.
-Use that exact project-specific target, not the generic `connect.shipd.cloud`
-or another project's target.
+`shipd domains status` reports this project's own `connect_target` and
+`acme_delegation_target` alongside every claim; the DomainConnect action's
+message repeats them. Use that exact project-specific target, not the generic
+`connect.shipd.cloud` or another project's target.
 
 At your DNS provider, replace the subdomain's unrelated A/AAAA records with:
 
@@ -42,6 +43,11 @@ shipd plan --non-interactive
 shipd apply --non-interactive
 ```
 
+Pending claims are also visible in the dashboard's Domains page, with the DNS
+records each still needs; where a verification link is still open, that page
+links to it. The dashboard is read-only — it cannot issue a fresh link, so it
+prints the `connect` command instead.
+
 `connect` returns `action_required` (exit 3) while DNS needs verification. The
 message names each DNS record; its capability-bearing action URL opens the
 verification page. If DNS has not propagated, approval refuses and the same
@@ -58,7 +64,11 @@ expired. Claim exclusivity is enforced by the control plane.
 
 The old Homebrew 0.1.6 binary exposes only `domains release`; use the updated
 binary containing connect/status. Do not infer command support from an old
-admission hint alone.
+admission hint alone. Release ordering matters on this route specifically: the
+domain-claims response is a closed shape, so a CLI older than the control
+plane rejects the added `connect_target`/`acme_delegation_target`/
+`expires_at_millis` fields outright. Ship the CLI before the control plane, or
+accept that `domains status` breaks for stale binaries.
 
 ## Certificate pending after apply
 
