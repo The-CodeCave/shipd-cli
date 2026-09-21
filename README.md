@@ -12,6 +12,10 @@ Homebrew on Apple Silicon, Intel macOS, or Linux:
 brew install The-CodeCave/tap/shipd
 ```
 
+Homebrew pours a prebuilt, notarized binary — no Xcode, Command Line Tools, or
+compiler is required. If Homebrew offers to build from source, run
+`brew update` and try again.
+
 Verified installer on Apple Silicon, Intel macOS, x86-64 Linux, or ARM64 Linux:
 
 ```sh
