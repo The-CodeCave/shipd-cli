@@ -72,10 +72,10 @@ accept that `domains status` breaks for stale binaries.
 
 ## Certificate pending after apply
 
-The current apply completes after requesting a certificate; it does not wait
-for issuance or automatically publish the withheld HTTPS route afterwards.
-`certificate_pending` therefore is not a live custom-domain URL, and that host
-may return 404 while only the platform URL is routed. Once issuance has finished,
-run `shipd plan` and `shipd apply` again to publish the route. Confirm the custom
-hostname appears as published and verify its HTTPS response. Resuming a completed
-operation only rechecks its recorded endpoints; it does not render a new route.
+Apply publishes a custom domain's HTTPS route together with its certificate
+request and completes without waiting for issuance; the domain reports
+`certificate_pending`. Issuance usually finishes within minutes, and the route
+then serves the issued certificate on its own — no further deploy is needed.
+Until then the host answers with the platform's default certificate, so it is
+not yet a live URL. Verify the custom hostname's HTTPS response after issuance;
+the next plan/apply reports it as `published`.
