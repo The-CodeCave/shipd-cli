@@ -31,6 +31,29 @@ connection workflow, select the domains reference from the skill routing table.
 For persistence, managed PostgreSQL or secret bindings, select the data-and-secrets
 reference from the entry point only when the app needs them.
 
+## Raw TCP and the client's address
+
+`x-tcp: [5432]` publishes a declared TCP port as raw TCP; the container then sees
+Shipd's proxy as its peer, never the client. To receive the client's address, opt a
+port into PROXY protocol v2 (version 2 only; not for `x-udp` or `x-tls-passthrough`):
+
+```yaml
+services:
+  edge:
+    x-tcp:
+      - {port: 443, proxy-protocol: 2}
+      - 2222
+```
+
+Each new connection then starts with a v2 header whose source is the client's
+public address and port. Make the server accept that header first, trusting it only
+from `10.42.0.0/16` (the cell's pod network; the proxy's own address changes when
+the ingress node moves) — for Caddy, the `proxy_protocol` listener wrapper with
+`allow 10.42.0.0/16`, ahead of `tls`. A server that does not expect the header fails
+every connection, so plan warns when a live port switches. To switch off, deploy the
+bare port before removing the server's support. Pods of the same project can forge
+the header; treat it as trusted only inside that boundary.
+
 ## Build arguments
 
 Shipd supports standard Compose `build.args` for Dockerfile `ARG` values:
