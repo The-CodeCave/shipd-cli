@@ -49,3 +49,5 @@ changing stored data. Never publicly expose a database just to connect the app.
 
 For any returned human action, use the actions route in SKILL.md. Do not add
 a database, storage service, or secret slot unless the application needs it.
+To read or change the objects inside an `x-managed: s3` bucket, use the objects
+route in SKILL.md.

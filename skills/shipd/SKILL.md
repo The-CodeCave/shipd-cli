@@ -1,6 +1,6 @@
 ---
 name: shipd
-description: Deploy and operate a user's application on Shipd using its CLI or an available Shipd MCP connection. Use for Shipd publishing, project connection, deployment approvals, credential-scan false positives, and diagnosed failures. Not for developing the Shipd platform itself or deploying to other clouds.
+description: Deploy and operate a user's application on Shipd using its CLI or an available Shipd MCP connection. Use for Shipd publishing, project connection, deployment approvals, credential-scan false positives, diagnosed failures, and managed bucket objects. Not for developing the Shipd platform itself or deploying to other clouds.
 ---
 
 # Shipd
@@ -30,6 +30,7 @@ handoff: project folder, operation ID, current state, next action.
 | App needs persistent data, PostgreSQL or secret bindings | [data and secrets](references/data-and-secrets.md) |
 | User requests MCP or the client needs a connection | [MCP](references/mcp.md) |
 | User requests push or CI deployment | [Git/CI](references/git.md) |
+| Read, upload or delete bucket objects; run `aws s3` on a bucket | [objects](references/objects.md) |
 
 ## Shared rules
 
