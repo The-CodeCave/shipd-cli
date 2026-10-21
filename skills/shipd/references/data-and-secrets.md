@@ -42,6 +42,56 @@ is gone everywhere and cannot be recovered — a human must enter a new one to u
 that slot again. Do not remove a slot to "reset" it; rotate it on the action page
 instead.
 
+**Schema migrations.** A managed PostgreSQL service also outputs
+`db.migration_url`, a URL for its migration role: it creates and owns the app's
+tables and may create schemas in its own database. `db.url` and its parts only
+read and write rows; bind them on long-running services such as `api` and
+`worker`. Bind `migration_url` only on a cron service with
+`x-schedule: "manual"`, whose base Compose entry has the app's image and
+`command:` set to the migration command:
+
+```yaml
+services:
+  db:
+    x-managed: postgres
+  api:
+    x-public: true
+    x-secret-env: { DATABASE_URL: db.url }
+  worker:
+    x-secret-env: { DATABASE_URL: db.url }
+  migrate:
+    x-schedule: "manual"
+    x-secret-env: { DATABASE_URL: db.migration_url }
+```
+
+`shipd run migrate` runs that command; `docker compose run migrate` does
+locally. `shipd run` starts from the image of the last healthy deploy, so ship a
+schema change in two steps: deploy the image with the migration and code that
+works on both the old and the new schema (add first, remove later), run
+`shipd run migrate`, then deploy code that needs only the new schema. On the
+first deploy, the app must become healthy before its tables exist.
+`shipd run migrate -- <cmd>` (e.g. `-- node dist/migrate.js`) runs any command
+with the DDL credential; pass only the migration. Never migrate from a
+long-running service's start command: the DDL credential must not live there.
+
+A `manual` cron never runs on its own (its CronJob is suspended); `shipd run`
+is its only trigger. Any cron may be `manual`, for any on-demand job. The
+command should still be safe to repeat (take a lock, do nothing when the
+schema is current) and must exit; the role allows 5 connections. A cron that
+binds `migration_url` with any other schedule, including a date like
+`0 4 29 2 *`, is refused with `MIGRATION_CRON_REQUIRES_MANUAL`, and a
+`depends_on` on a `manual` cron is refused because it would never be met.
+
+Binding `migration_url` on a long-running or `x-public` service is refused with
+`MANAGED_OUTPUT_REQUIRES_CRON` at that `x-secret-env` line; an `x-managed: s3`
+service has no such output (`MANAGED_OUTPUT_NOT_SUPPORTED_BY_ENGINE`). Shipd
+puts the credential only into cron containers, which no route reaches; never
+copy it elsewhere. Also not supported: `depends_on` with
+`service_completed_successfully` (refused; the run is a separate step),
+`migrate` behind `profiles:` (never deployed), or `migrate` without `image` or
+`build`. `shipd run` output redacts the URL and its password, but not a
+re-encoded form such as base64; never print it.
+
 Named volumes use `x-storage: persistent`, `object`, or `ephemeral`. Databases and
 SQLite need the required durability/locking semantics; do not move them onto
 object storage to avoid a warning. Account for migrations and backups before

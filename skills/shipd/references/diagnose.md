@@ -12,6 +12,13 @@ inspects **and can continue** managed work. Use it only when continuing that wor
 is authorized, not as an unconditional read-only probe. Keep the actual returned
 operation identifier even if the original terminal is gone.
 
+When an incident's evidence tail is too short to explain a failure, drill down:
+`shipd logs <service> --non-interactive` (MCP `logs`) returns each pod's scrubbed
+lines from the collector's last sample (≤200 per container, last 15 min, about a
+minute old; `--previous` for the crashed instance, `--tail <n>`, `--pod <name>`).
+It is not a live stream. Empty `streams` with partial `coverage` means no fresh
+sample, not a quiet service.
+
 Read only source/config implicated by the evidence. A non-null diagnosis and
 suggested fix are evidence to evaluate against the app; `diagnosis: null` means
 Shipd has no established cause. Explain the reduced raw signal and uncertainty.
@@ -39,4 +46,4 @@ blocker with its ID and next needed action rather than looping indefinitely.
 Additional operations: discover `shipd events --help --json` for post-deploy
 notifications or `shipd export --help --json` when source recovery is requested.
 Export writes files, so use an intended output directory. Do not invent `shipd
-logs`, `shipd rollback`, or other commands absent from installed help.
+rollback`, `shipd logs --follow`, or other commands absent from installed help.
