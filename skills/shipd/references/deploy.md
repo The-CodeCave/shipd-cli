@@ -48,11 +48,12 @@ from the skill's routing table.
 Managed output is **JSON Lines**: state changes followed by a final result. Do not
 parse the entire stream as one JSON object or treat the first line as completion.
 Use `schema`, `state`, `status`, nested `result`, and the operation ID together;
-exit code 2 can mean a still-pending deployment or a usage error.
+exit 4 means the wait elapsed with the deployment still running (nothing failed);
+exit 2 is only a usage error.
 
 | Result | Next action |
 |---|---|
-| `uploading`, `queued`, `running` | Keep the command running, or retain the ID and resume. A timeout does not cancel work. |
+| `uploading`, `queued`, `running` (final line has `timeout`, exit 4) | Nothing failed and work continues. Run its `resume_command` to wait again (optionally `--wait 30m`); never deploy again. |
 | `awaiting_action` / `action_required` (exit 3) | Select the actions reference; use the actual returned actions. |
 | `failed` (exit 1) | Inspect the reported failure; use diagnosis when needed. Retry the same source/operation only where supported. |
 | `succeeded` + `publication.status: verified` | Return `publication.verified_urls` and the observed outcome. |

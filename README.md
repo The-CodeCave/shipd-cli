@@ -56,7 +56,7 @@ The CLI uses Shipd's official endpoint automatically. `shipd auth login` also su
 
 Deployment output includes the public checks for DNS, TLS, HTTP responses, redirect loops, and broken critical assets. `publication.verified_urls` contains only URLs whose checks passed. A failed public check preserves the completed deployment and its operation ID; `shipd operations resume <operation_id>` rechecks it without deploying again. If the agent needs a secret or approval, it gives you the exact page to complete, then resumes the same uploaded source.
 
-`shipd plan`, `shipd deploy`, and operation resumes emit JSON Lines in `--json` mode: progress when the execution state changes, then one final result. A pending execution exits 2 and retains its resume command. A completed apply whose public checks fail exits 1 with `state: succeeded` and `publication.status: failed`; use its resume command to recheck DNS/TLS readiness, or `shipd status` for diagnosis.
+`shipd plan`, `shipd deploy`, and operation resumes emit JSON Lines in `--json` mode: progress when the execution state changes, then one final result. They wait up to 10 minutes (`--wait 30m` waits longer, up to 60m). If the wait elapses first, nothing has failed: the final line carries `timeout` and `resume_command`, stderr says so in one sentence, and the command exits 4; run the resume command to wait again instead of deploying twice. Exit 2 is reserved for usage errors. A completed apply whose public checks fail exits 1 with `state: succeeded` and `publication.status: failed`; use its resume command to recheck DNS/TLS readiness, or `shipd status` for diagnosis.
 
 ## Give your agent the Shipd skill
 
@@ -148,10 +148,10 @@ has configured a different one on both sides. `--wait-timeout` defaults to 600 s
 exceed 600 — the capability's own life.
 
 Exit codes follow the ordinary contract with one thing worth reading twice. A deploy that is
-waiting for CI evidence exits **0**, not 1 and not 2: when the binding gates on the very workflow
+waiting for CI evidence exits **0**, not 1 and not 4: when the binding gates on the very workflow
 run that called this command, waiting for that evidence would deadlock the run. `succeeded`,
 `awaiting_ci` and `awaiting_action` exit 0; `failed` and `superseded` exit 1; a `--wait-timeout`
-that elapses exits 2 **with the intent still running** — re-run the command to wait again, on the
+that elapses exits 4 **with the intent still running** — re-run the command to wait again, on the
 same commit and therefore the same intent.
 
 The id-token and the capability appear in no output, log line or diagnostic, even when the control
