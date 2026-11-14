@@ -25,6 +25,9 @@ Read when an operation returns `action_required` or a pending confirmation.
    binding uses its confirmation ID). Resume the exact requested action, not a
    fresh deploy of possibly changed files.
 
+A Git-push deploy that waits on a human returns no action to you; the Git
+reference says where its requests appear and how it continues.
+
 For a `compose.safety.yaml` false-positive review before upload, no uploaded
 operation exists yet. After approval, rerun `plan`/`deploy` from the same folder
 as the action directs. Offline `validate` cannot verify server approval and may

@@ -22,13 +22,17 @@ This extends an existing local `db` PostgreSQL service. `db.url` is its managed
 output; `stripe_key` is an external secret slot. Add only the dependencies the app
 uses. Do not read existing secret values to author these bindings.
 
-**What happens when a bound slot has no value.** `deploy` does not apply. It
-returns `action_required` with one `secret_value` action per unfilled slot,
-each carrying a URL and a verification code, and creates nothing — so nothing
-is billed and nothing serves errors. Give the human the URL, wait for them to
-enter the value, then run the same `deploy` again; it proceeds once every bound
-slot is filled. A slot that is declared but not bound by any `x-secret-env`
-never blocks a deploy.
+**What happens when a bound slot has no value.** A folder `deploy` does not
+apply. It returns `action_required` with one `secret_value` action per unfilled
+slot, each carrying a URL and a verification code, and creates nothing — so
+nothing is billed and nothing serves errors. Give the human the URL, wait for
+them to enter the value, then run the same `deploy` again; it proceeds once
+every bound slot is filled. A slot that is declared but not bound by any
+`x-secret-env` never blocks a deploy.
+
+A Git-push deploy has no command to run again and prints no URL to you. It
+builds first, then waits (`awaiting_human`) on the same requests; see the Git
+reference for where the human acts and what happens next.
 
 You cannot read, set, or verify the value itself, and there is no command that
 takes one — the value goes from the human's browser to the platform and is

@@ -35,6 +35,19 @@ mint the CI job's identity. A pushed commit deploys its own Compose files; it
 does not deploy uncommitted changes in the user's local folder. Use the installed
 help to establish provider support instead of promising integrations from a roadmap.
 
+**When a pushed deploy needs a human** (an unfilled bound secret slot, a safety
+review, an approval) it waits: `shipd deploys show <intent-id>` reports
+`awaiting_human` and lists every request with its state, and the `shipd/deploy`
+check run on the commit lists them too and links the dashboard's needs-attention page. The project owner
+acts there; you cannot, and `shipd confirmations` and `shipd operations resume`
+do not apply to a pushed deploy. Tell the user what is open and where. Once
+every request is done the same deploy continues by itself and reuses its built
+images; do not push again to "retry" it. Requests stay open as long as the deploy
+waits: the binding's `on_action_required` wait time. A declined request, or one
+still open at that deadline, ends the deploy as failed, the running app
+unchanged, and only a new commit starts another. Before pushing a change that binds a new secret
+slot, say so, so the human can be ready to enter the value.
+
 OIDC removes the need for a personal Shipd token in CI; the GitHub App installation
 is still required to fetch the source and report deployment results. There is no
 OIDC-only installation-free binding in this implementation. `--ci-gate off` also
