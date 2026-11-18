@@ -77,7 +77,9 @@ Keep the correlation ID when contacting Shipd support; never share the folder to
 
 - `DEPLOYMENT_UNAVAILABLE`: retry after `retry_after_seconds`.
 - `DEPLOYMENT_NOT_CONFIGURED` or `PROJECT_NOT_READY`: contact Shipd support with the correlation ID.
-- `AUTH_FORBIDDEN`: the project owner must grant deployment permission to the folder token.
+- `AUTH_FORBIDDEN`: check the token's scopes, its holder's current project/org
+  permissions, and production protection. An authorised owner/admin resolves
+  access; the dashboard owner selector does not change the folder's identity.
 - `OPERATION_INVALID`: copy the complete operation ID (`local-` plus 64 lowercase hex characters).
 - `OPERATION_UNKNOWN`: check the project and ID; rerun plan/apply if no upload was accepted.
 

@@ -60,8 +60,8 @@ Deployment output includes the public checks for DNS, TLS, HTTP responses, redir
 
 ## Give your agent the Shipd skill
 
-The optional [Shipd skill](https://github.com/The-CodeCave/shipd-cli/tree/main/skills/shipd) teaches your agent the publishing
-and recovery workflow. Install it from your application's root folder:
+The optional [Shipd skill](https://github.com/The-CodeCave/shipd-cli/tree/main/skills/shipd) teaches your agent CLI installation,
+project and organisation access, publishing, and recovery. Install it from your application's root folder:
 
 ```sh
 npx skills add The-CodeCave/shipd-cli --skill shipd
@@ -76,7 +76,7 @@ Keep `references/` beside `SKILL.md`. For Codex, a project installation belongs 
 skill discovery/reload instructions, then ask it to deploy the project to Shipd.
 
 The skill exposes a short description for discovery, a small overview when
-selected, and eight independent references loaded only for the current task. It
+selected, and independent references loaded only for the current task. It
 uses the installed CLI's command-specific help when needed. Do not paste all of
 its files into a system prompt or AGENTS.md: that defeats progressive disclosure.
 The folder CLI works without the skill; installing it adds no authentication step.

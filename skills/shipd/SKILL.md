@@ -1,26 +1,26 @@
 ---
 name: shipd
-description: Deploy and operate a user's application on Shipd using its CLI or an available Shipd MCP connection. Use for Shipd publishing, project connection, deployment approvals, credential-scan false positives, diagnosed failures, and managed bucket objects. Not for developing the Shipd platform itself or deploying to other clouds.
+description: Deploy and operate apps on Shipd through its CLI or MCP. Covers CLI installation, project connection, organisations and access, deployment, approvals, credential-scan exceptions, diagnosis, and bucket objects. Not for developing Shipd itself or deploying to other clouds.
 ---
 
 # Shipd
 
 Shipd is a managed cloud operated by the user's coding agent. Standard
 `compose.yaml` plus `compose.deploy.yaml` describe the app; Shipd builds and runs
-it remotely. The dashboard shows state and completes human actions. Customers
-only need their folder-scoped Shipd token to publish.
+it remotely. The dashboard manages personal and organisation projects and human
+actions. Publishing uses a project token bound to the application's folder.
 
 ## Load only the current task
 
-Choose **one** reference below for the immediate task. Read another only when
-an observed result or the user's request needs it. References are independent;
-do not preload, concatenate, or recursively read this directory. Do not copy the
-whole skill into AGENTS.md, CLAUDE.md, or persistent memory. Retain only a small
-handoff: project folder, operation ID, current state, next action.
+Read **one** reference for the immediate task; load another only as needed.
+Do not preload this directory or copy the skill into AGENTS.md, CLAUDE.md, or
+memory. Retain only project folder, operation ID, state, and next action.
+If `shipd` is missing, start with connect to install it, then continue the task.
 
 | Immediate need | Read |
 |---|---|
 | Missing CLI, authentication, or wrong folder | [connect](references/connect.md) |
+| Personal/org ownership, roles, invitations, billing, or transfers | [organisations](references/organisations.md) |
 | First publish, changed source, or interrupted deployment | [deploy](references/deploy.md) |
 | Create or repair Compose and public HTTP exposure | [compose](references/compose.md) |
 | Connect a custom domain or check DNS/TLS publication | [domains](references/domains.md) |
